@@ -1,0 +1,56 @@
+## How to Insert data from source table to Destination table 
+
+insert into [dbo].[VCT_TWIFTPPRiceBOOK]  (No,VendoritemNo_,BRAND,MSPN,Tread,size, Description ,CustPrice, Netnet,FET,PricewithFET,UPC,QTY,Total_Qty ) 
+SELECT 
+no, 
+vendoritemno,
+brand,
+case
+WHEN BRAND = 'ACCELERA' THEN   VendoritemNo
+WHEN BRAND = 'Bridgestone' THEN    RIGHT('000000' + [VendoritemNo],6)
+WHEN BRAND = 'Continental' THEN    RIGHT('00000000000' + [VendoritemNo],11)
+WHEN BRAND = 'DEESTONE' THEN    VendoritemNo 
+When BRAND = 'DELINTE' THEN VendoritemNo
+when BRAND = 'DORAL' THEN VendoritemNo 
+when BRAND = 'FALKEN' THEN RIGHT('00000000' + [VendoritemNo],8)
+WHEN BRAND = 'Firestone' THEN    RIGHT('000000' + [VendoritemNo],6)
+WHEN BRAND = 'FUZION' THEN    RIGHT('000000' + [VendoritemNo],6)
+WHEN BRAND = 'General' THEN    RIGHT('00000000000' + [VendoritemNo],11)
+WHEN BRAND = 'GLADIATOR' THEN    RIGHT('000000000' + [VendoritemNo],9)
+WHEN BRAND = 'GT RADIAL' THEN   VendoritemNo 
+WHEN BRAND = 'HANKOOK' THEN  RIGHT('0000000' + [VendoritemNo],7)
+WHEN BRAND = 'HIFLY' THEN   VendoritemNo
+WHEN BRAND = 'KUMHO' THEN   VendoritemNo
+WHEN BRAND = 'LANDSAIL' THEN   REPLACE(no,'PN','')
+WHEN BRAND = 'MAXXIS' THEN   VendoritemNo
+WHEN BRAND = 'NEXEN' THEN   RIGHT('00000000'+[VendoritemNo],8)
+WHEN BRAND = 'NEPTUNE' THEN   VendoritemNo
+WHEN BRAND = 'OHTSU' THEN RIGHT('00000000' + [VendoritemNo],8)
+WHEN BRAND = 'OMNI CARGO' THEN   VendoritemNo
+WHEN BRAND = 'ONYX'  THEN  VendoritemNo
+WHEN BRAND = 'PEGASUS'  THEN   VendoritemNo
+WHEN BRAND = 'ROADMASTER'  THEN   VendoritemNo
+WHEN BRAND = 'ROADSHINE'  THEN  VendoritemNo
+WHEN BRAND = 'SUMITOMO'  THEN   VendoritemNo
+WHEN BRAND = 'SUNFULL'  THEN   VendoritemNo
+WHEN BRAND = 'THUNDERER'  THEN   VendoritemNo
+WHEN BRAND = 'TORQUE'  THEN   VendoritemNo
+WHEN BRAND = 'TOYO'  THEN   VendoritemNo
+WHEN BRAND = 'BFGOODRICH' THEN    RIGHT('00000' + [VendoritemNo],5)
+WHEN BRAND = 'Michelin' THEN    RIGHT('00000' + [VendoritemNo],5)
+WHEN BRAND = 'Uniroyal' THEN    RIGHT('00000' + [VendoritemNo],5)
+When BRAND='YOKOHAMA' THen RIGHT('00000' + [VendoritemNo],5)
+WHEN BRAND = 'UNICORN'  THEN   VendoritemNo
+ELSE [VendoritemNo]
+END AS mspn,
+tread,
+size,
+DESCRIPTION,
+custprice,
+round([custprice] *.98*.97,2) as [Netnet],
+FET,
+PricewithFET ,
+UPC,[07_qty],Total_QTY
+from                           
+[dbo].[SRC_TWIFTP_inventory] WHERE BRAND not in( 'OMNI CARGO','ONYX','SUNFULL','TORQUE','THUNDERER','ROADSHINE',
+'ROADMASTER','PEGASUS','LANDSAIL','DEESTONE','HIFLY','UNICORN')

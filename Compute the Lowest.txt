@@ -1,0 +1,190 @@
+USE [ATVInterFace]
+GO
+
+## How to Compute the Lowest source from different tables
+
+/****** Object:  StoredProcedure [dbo].[VCT_compare]    Script Date: 3/25/2019 3:10:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[VCT_compare] 
+	@TCI  decimal(18,2),
+	@wheelspro decimal(18,2),
+	@TwiEast decimal(18,2),
+	@ntw decimal(18,2), 	
+	@Tireuniverse   decimal(18,2),
+	@Turbo  decimal(18,2),
+	@MICKEYTHOMPSON  decimal(18,2),
+	@ATD   decimal(18,2),
+	@TOYO  decimal(18,2),
+	@Tireco  decimal(18,2),
+	@MAST decimal(18,2),	
+	@TWIFTP decimal(18,2),
+	@Kumho decimal(18,2),
+	@Ramona decimal(18,2),
+	@TWW decimal(18,2),
+	@AdvanceTire decimal(18,2),
+	@pirelli decimal(18,2),
+	@Syron decimal(18,2),	
+	@Goodyear decimal(18,2),
+	@ContiDirect decimal(18,2),
+	@mspn varchar(50),
+	@mfg varchar(50),
+	@Log_asa decimal (18,2),
+	@Nitto decimal(18,2),
+	@hankookmapprice decimal(18,2),
+	@coopermapprice decimal(18,2),
+	@PirelliMapPrice decimal(18,2),
+	@YokohamaMapPrice decimal(18,2),
+	@Lowest decimal(18,2) output,
+	@SLowest decimal(18,2) output,
+	@ThirdLowest decimal(18,2) output,
+	@FourLowest decimal(18,2) output,
+	@FiveLowest decimal(18,2) output,
+	@SixLowest decimal(18,2) output,
+	@SevenLowest decimal(18,2) output,
+	@EightLowest decimal(18,2) output,
+	
+	@LowestSource varchar(50) output,
+	@sLowestSource varchar(50) output,
+	@ThirdLowestSource varchar(50) output,
+	@FourLowestSource varchar(50) output,
+	@FiveLowestSource varchar(50) output,
+	@sixLowestSource varchar(50) output,
+	@SevenLowestSource varchar(50) output,
+	@EightLowestSource varchar(50) output
+AS
+BEGIN
+	truncate table vct_pricetemp
+	insert into vct_pricetemp (price,source) values (@TCI,'TCI')
+	insert into vct_pricetemp (price,source) values (@wheelspro,'WheelsPro')
+	insert into vct_pricetemp (price,source) values (@TwiEast,'TwiEast')
+	insert into vct_pricetemp (price,source) values (@ntw,'ntw')
+	insert into vct_pricetemp (price,source) values (@Tireuniverse,'Tireuniverse')
+	insert into vct_pricetemp (price,source) values (@Turbo,'Turbo')
+	insert into vct_pricetemp (price,source) values (@MICKEYTHOMPSON ,'MICKEYTHOMPSON ')
+	insert into vct_pricetemp (price,source) values (@ATD,'ATD')
+	insert into vct_pricetemp (price,source) values (@TOYO,'TOYO')
+	insert into vct_pricetemp (price,source) values (@Tireco,'Tireco')
+	insert into vct_pricetemp (price,source) values (@MAST,'MAST')
+	insert into vct_pricetemp (price,source) values (@TWIFTP,'TWIFTP')
+	insert into vct_pricetemp (price,source) values (@Kumho,'Kumho')
+	insert into vct_pricetemp (price,source) values (@Ramona,'Ramona')
+	insert into vct_pricetemp (price,source) values (@Goodyear,'Goodyear')
+	insert into vct_pricetemp (price,source) values (@ContiDirect,'ContiDirect')
+	insert into vct_pricetemp (price,source) values (@Log_asa ,'Log_ASA')
+	insert into vct_pricetemp (price,source) values (@Nitto,'NittoMapPrice')
+	insert into vct_pricetemp (price,source) values (@coopermapprice,'coopermapprice')
+	insert into vct_pricetemp (price,source) values (@hankookmapprice,'hankookmapprice')
+	insert into vct_pricetemp (price,source) values (@PirelliMapPrice,'PirelliMapPrice')
+	insert into vct_pricetemp (price,source) values (@YokohamaMapPrice,'YokohamaMapPrice')
+	
+	insert into vct_pricetemp (price,source) values (@TWW,'TWW')
+	insert into vct_pricetemp (price,source) values (@AdvanceTire,'AdvanceTire')
+	insert into VCT_PriceTemp (price,source) values (@pirelli,'Pirelli')
+	insert into VCT_PriceTemp (price,source) values (@Syron,'Syron')
+	declare @vct_Price_cursor  as cursor 
+	declare @Lowest_ as decimal(18,2)
+	declare @LowestSource_ as varchar(50) 
+	declare @i as int
+	set @vct_Price_cursor = cursor for  select top (8) price,source from vct_pricetemp where price > 0 order by price;
+	open @vct_price_cursor
+	fetch next from @vct_price_cursor into @lowest_,@lowestsource_
+	set @i = 1
+	set @Lowest = 0
+	set @sLowest = 0
+	set @ThirdLowest = 0
+	set @FourLowest=  0
+	set @FiveLowest= 0
+	set @SixLowest = 0
+	set @SevenLowest = 0
+	set @EightLowest = 0
+	set @LowestSource = ''
+	set @sLowestSource = ''
+	set @ThirdLowestSource = ''
+	set @FourLowestSource = ''
+	set @FiveLowestSource =''
+	set @SixLowestSource = ''
+	set @SevenLowestSource =''
+	set @EightLowestSource = '' 
+ 
+
+
+	while @@FETCH_STATUS = 0
+	begin
+		if @i = 1 
+		begin
+			set @Lowest = @lowest_
+			set @LowestSource = @LowestSource_ 
+			
+		end
+				 	
+		
+		if @i = 2
+		begin
+			set @SLowest  = @lowest_
+			set @sLowestSource = @LowestSource_
+			
+		end
+		
+		if @i = 3
+		begin
+			set @ThirdLowest  = @lowest_
+			set @ThirdLowestSource = @LowestSource_
+			
+		end
+		
+		
+		if @i = 4
+		begin
+			set @FourLowest  = @lowest_
+			set @FourLowestSource = @LowestSource_
+			
+		end
+		
+
+		
+		if @i = 5
+		begin
+			set @FiveLowest  = @lowest_
+			set @FiveLowestSource = @LowestSource_
+			
+		end
+
+
+		
+		if @i = 6
+		begin
+			set @SixLowest  = @lowest_
+			set @SixLowestSource = @LowestSource_
+			
+		end
+		
+
+		
+		if @i = 7
+		begin
+			set @SevenLowest  = @lowest_
+			set @SevenLowestSource = @LowestSource_
+			
+		end
+			
+		
+		
+		else 
+		begin
+			set @EightLowest  = @lowest_
+			set @EightLowestSource = @LowestSource_
+			
+		end
+		
+		
+			
+		
+		set @i = @i+ 1
+		fetch next from @vct_price_cursor into @lowest_,@lowestsource_
+	end
+	close @vct_price_cursor
+	deallocate @vct_price_cursor
+END

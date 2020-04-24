@@ -1,0 +1,12 @@
+##To Check the Duplicate the values in the table 
+
+DECLARE  @RunScript bit;
+set @RunScript = 0
+
+select @RunScript = count(*) from (
+select * from VCT_TCIPRICEbook where mspn is null or brand is null
+) as t 
+IF @RunScript != 0
+begin
+RAISERROR ('Null MSPN / MFG Exists! check [select * from VCT_TCIPRICEbook where mspn is null or brand is null]', 1, 1);
+end

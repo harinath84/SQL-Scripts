@@ -1,0 +1,744 @@
+How to Compare the lowest number and source 
+
+
+-******************************************************************************************************************************************
+truncate table [dbo].[VCT_DataUnion]
+declare @mspn varchar(50)
+declare @vendoritemno varchar(50)
+declare @custprice decimal(18,2)
+declare @mfg varchar(50)
+declare @netnet decimal(18,2)
+declare @des1 as varchar(max)
+declare @des2 as varchar(max)
+declare @vct_cursor  as cursor 
+-- NTW
+--set @vct_cursor = cursor for  select AMSPN,MSPN,custprice,Brand,Description1,Description2 from [dbo].[VCT_NTWPricebook];
+--open @vct_cursor
+--fetch next from @vct_cursor into @mspn,@vendoritemno,@custprice,@mfg,@des1,@des2
+--while @@FETCH_STATUS = 0
+--begin
+--       insert into [dbo].[VCT_DataUnion] ([MSPN],[VENDORITEMNO],[MFG],[PRICE],[SOURCE],[NETNET],[description1]) values (@mspn,@vendoritemno,@mfg,@custprice ,'NTW',(@custprice*.97),@des1+'|'+@des2)
+--fetch next from @vct_cursor into @mspn,@vendoritemno,@custprice,@mfg,@des1,@des2
+--end
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       AMSPN,      MSPN,    brand,       custprice,   'NTW',  (custprice), Description1 +'|'+Description2 
+from [dbo].[VCT_NTWPricebook]
+--************************************************************************************************************************************************
+
+--vast
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       part_number,part_number,   dbo.getBrand (vendor_number),average_cost,'VAST',  average_cost, item_desc 
+from [dbo].[VCT_VAST326PriceBook]
+--ATD
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPNOracle,      VenID,    brand,       Netnet,   'ATD',  Netnet, Description 
+from [dbo].[VCT_ATDPricebook]
+
+--TWW
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      SKU,    brand,       Price,   'TWW',  Price, Description 
+from [dbo].[VCT_TWWPricebook]
+
+-- Nitto
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      MSPN,    'NITTO',       mapprice,   'NittoMapPrice',  mapprice, Description 
+from [dbo].[VCT_NittoMapprice]
+
+
+
+---Pirelli
+insert into 
+[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+						MSPN, MSPN,BRAND,MapPrice,'PirelliMapPrice',MapPrice,IPDescri
+from [dbo].[Pirelli_Map_Price] 
+
+
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       SCode,      SCode,    'Hankook',       mapprice,   'HankookMapPrice',  mapprice, ProductName 
+from [dbo].[VCT_Hankook_Map_Price]
+
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       Material,      Material,    'Cooper',       mapprice,   'CooperMapPrice',  mapprice, BrandLine 
+from [dbo].[VCT_CooperMapPrice]
+
+
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       Part,      Part,    'Yokohama',       MapPrice,   'YokohamaMapPrice',  MapPrice, Tread 
+from [dbo].[VCT_Yokohama_MapPrice]
+
+
+
+
+
+
+---- Log ASA
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      MSPN,    Brand,       retail,   'Log_ASA',  retail, Description 
+from [dbo].[Log_ASA]
+
+
+----TCI
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      tciPartnumber,    Brand,       Netnet,   'TCI',  Netnet, Tiresize+' '+servDesc+' '+sidewall+' ' +Name 
+from [dbo].[VCT_TCIPRICEbook]
+
+
+--Tireco
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       AMSPN,      itemnumber,    Brand,       Netnet,   'TIRECO',  Netnet, Description
+from [dbo].[VCT_TireCoPricebook]
+
+
+--Ramona
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       AMSPN,      Article,    Brand,       ramonatireinvoice,   'RAMONA',  ramonatireinvoice,  Type+' '+line+' '+ size+' '+lisr+' '+ ply+' '+SW+' '+UTQG
+from [dbo].[VCT_RamonatirePriceBook]
+
+--MAST
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      MSPN,    Brand,       netprice,   'MAST',  netprice,  Productline +' ' + [desc]
+from [dbo].[VCT_MASTPRICEBOOK]
+
+
+----TOYO
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      MSPN,    Brand,       NetNet,   'TOYO',  NetNet,  [desc]  
+from [dbo].[VCT_TOYOPRICEBOOK]
+
+
+--Tireuniverse
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      item,    Brand,       Price,   'TIREUNIVERSE',  Price,  size+' '+[Description]  
+from [dbo].[VCT_TIREuniversePricebook]
+
+---Turbo
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       AMSPN,      Productcode,    Brand,       NetNet,   'TURBO',  NetNet,  [Desc]  
+from [dbo].[VCT_TURBOPricebook]
+
+
+---Kumho
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      code,    Brand,       NetPrice,   'KUMHO',  FinalNetPrice,  size+' '+Pattern  
+from [dbo].[VCT_KumhoPriceBook]
+
+
+---MICKEY THOMPSON
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      MSPN,    Brand,       UNITPRICE,   'MICKEYTHOMPSON',  UNITPRICE,  Description  
+from [dbo].[VCT_MICKEYTHOMPSONPRICEBOOK]
+
+
+
+---Wheelpros
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      vendorid,    Brand,       Wd,   'WHEELSPRO',  Wd,  Partnumber+' ' +size  
+from [dbo].[VCT_Wheelspropricebook]
+
+
+
+---TWIFTP
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      No,    Brand,       Netnet,   'TWIFTP',  Netnet,  Description  
+from [dbo].VCT_TWIFTPPRiceBOOK
+
+
+---TWIEast
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      Productcode,    Brand,       Netnet,   'TWIEAST',  Netnet,  make +' '+ pattern+' ' +Displayname  
+from [dbo].[VCT_TWIEASTPricebook]
+
+---AdvanceTire
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       MSPN,      MSPN,    Brand,       price,   'AdvanceTire',  price,  Description  
+from [dbo].[VCT_advancetirepricebook]
+
+--CONTIPricebook
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       Article,      Article,    Brand,       Netnet,   'CONTIDIRECT',  Netnet,  Description
+from [dbo].VCT_CONTINENTALPRICEBOOK
+
+-- --Goodyear Pricebook
+insert into 
+	[dbo].[VCT_DataUnion] ([MSPN],     [VENDORITEMNO],[MFG],      [PRICE],     [SOURCE],[NETNET],     [description1])
+select 
+	                       productcode,      productcode,    Brand,       invoice,   'GOODYEAR',  netnet,  Description
+from [dbo].VCT_GOODYEARPRICEBOOK
+
+---Pirelli Pricebook
+--insert into 
+--[dbo].[VCT_DataUnion] ([MSPN],[VENDORITEMNO],[MFG],[PRICE],[SOURCE],[NETNET],[description1])
+
+--select IPCode,IPcode,brand,invoice,'Pirelli',Netnet,Description
+
+--from [dbo].[VCT_PirelliPriceBook]
+
+--Syron Pricebook
+insert into 
+[dbo].[VCT_DataUnion] ([MSPN],[VENDORITEMNO],[MFG],[PRICE],[SOURCE],[NETNET],[description1])
+
+select EAN,EAN,Brand,Price,'Syron',Price,Description
+
+from [dbo].[VCT_SyronTires PriceBook]
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+-- update the old cooper codes with new cooper codes at data union with information available at mam catalog.
+update 
+	VCT_DataUnion
+set 
+	mspn = c.Erpid
+from 
+	VCT_DataUnion d inner join
+	[dbo].[MAMCatalog$] c on c.mspn = d.mspn and c.brand = d.mfg
+where
+	c.brand = 'cooper' and c.mspn <> c.Erpid and c.erpid <> ''
+
+-- place the resultant duplicate records at	VCT_DataUnion_work
+if object_ID(N'VCT_DataUnion_work') is not null drop table	VCT_DataUnion_work
+select 
+	MSPN,mfg,SOURCE 
+into
+	VCT_DataUnion_work
+from 
+	VCT_DataUnion 
+where
+	 MFG = 'cooper' 
+	and mspn <> VENDORITEMNO 
+group by 
+	mspn,mfg,source
+having 
+	count(source) > 1
+
+-- for the records identified retreive the duplicate id's 
+if object_ID(N'VCT_DataUnion_work1') is not null drop table	VCT_DataUnion_work1
+select 	
+	d.MSPN,d.mfg,d.SOURCE, d.ID 
+into 
+	VCT_DataUnion_work1
+from 
+	VCT_DataUnion d inner join VCT_DataUnion_work w
+on
+	d.mspn = w.mspn and d.mfg=w.mfg and d.source=w.source
+
+-- now identify the bigest id.  There can be only one duplicate.
+if object_ID(N'VCT_DataUnion_work2') is not null drop table	VCT_DataUnion_work2	
+select 	
+	MSPN,mfg,SOURCE, Max(id) as id 
+into
+	VCT_DataUnion_work2
+from 	
+	VCT_DataUnion_work1 
+group by 
+	MSPN,mfg,SOURCE
+
+-- delete the id at data union.
+delete from VCT_DataUnion where id in (select  id from VCT_DataUnion_work2)
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+if object_ID('VCT_DataPivot') is not null drop table [dbo].[VCT_DataPivot]
+select 
+*
+INTO VCT_DataPivot
+from
+(
+select 
+ isnull(upper(ltrim(rtrim(mfg))),'') as mfg, 
+ isnull(mspn,'') as mspn,
+source , 
+ netnet 
+ from  [dbo].[VCT_DataUnion] 
+ WHERE  (dbo.VCT_DataUnion.MFG NOT IN ( ' D"', 'WHEELS', 'VERCELLI', 'VENEZIA', 'UNICORN', 'TUBE', 'TSL',  'TORQUE', 'TITAN', 'THUNDERER', 'SUNFULL', 
+ 'Sonar',  'SAM', 'ROADSHINE', 'ROADMASTER', 'Powerking', 'Sendel', 'Rim', 'Primewell', 'PEGASUS', 'OTANI', 'ONYX', 'LEAD WEIGHTS', 'TBC Neutral',
+'G2',  'ACCESSORIES', 'ADVANCE', 'BKT',  'COMFORSER',  'DEESTONE', 'Doknow',  'DISCONTINUED ITEMS'))
+) srctable
+pivot
+(
+max(netnet)
+for source in ([Goodyear],[ContiDirect],[TCI],[wheelspro],[TWIEast],[NTW],[Tireuniverse],[Turbo],[MICKEYTHOMPSON],[ATD],[TOYO],[Tireco],[MAST],[TWIFTP],[Kumho],[Ramona],[Log_asa],[NITTO],[TWW],[AdvanceTire],[Pirelli],[Syron],[CooperMapprice],[hankookMapprice],[PirelliMapPrice],[YokohamaMapPrice])
+  ) piv;
+
+update VCT_DataPivot  set tci = isnull(tci,0)
+update VCT_DataPivot  set wheelspro = isnull(wheelspro ,0)
+update VCT_DataPivot  set TWIEast = isnull(TWIEast,0)
+update VCT_DataPivot  set NTW = isnull(NTW,0)
+update VCT_DataPivot  set Tireuniverse = isnull(Tireuniverse,0)
+update VCT_DataPivot  set Turbo = isnull(Turbo,0)
+update VCT_DataPivot  set MICKEYTHOMPSON = isnull(MICKEYTHOMPSON,0)
+update VCT_DataPivot  set ATD = isnull(atd,0)
+update VCT_DataPivot  set TOYO = isnull(TOYO,0)
+update VCT_DataPivot  set Tireco = isnull(Tireco,0)
+update VCT_DataPivot  set MAST = isnull(MAST,0)
+update VCT_DataPivot  set Kumho = isnull(Kumho,0)
+update VCT_DataPivot  set Ramona = isnull(Ramona,0)
+update VCT_DataPivot  set TWIFTP = isnull(TWIFTP,0)
+update VCT_DataPivot  set Goodyear = isnull(Goodyear,0)
+update VCT_DataPivot  set ContiDirect = isnull(ContiDirect,0)
+UPDATE VCT_DataPivot  set Log_asa = isnull(LOG_ASA,0)
+UPDATE VCT_DataPivot  set NITTO = isnull(NITTO,0)
+UPDATE VCT_DataPivot  set CooperMapprice = isnull(CooperMapprice,0)
+UPDATE VCT_DataPivot  set hankookMapprice = isnull(hankookMapprice,0)
+UPDATE VCT_DataPivot  set PirelliMapPrice = isnull(PirelliMapPrice,0)
+
+UPDATE VCT_DataPivot  set YokohamaMapPrice = ISNULL(YokohamaMapPrice,0)
+
+
+UPDATE VCT_DataPivot  set TWW = isnull(TWW,0)
+UPDATE VCT_DataPivot  set AdvanceTire = isnull(AdvanceTire,0)
+UPDATE VCT_DataPivot  set Pirelli= ISNULL(Pirelli,0)
+UPDATE VCT_DataPivot  set Syron= ISNULL(Syron,0)
+
+truncate table vct_Datacompare
+
+declare @goodyear1 varchar(50)
+declare @contidirect1 varchar(50)
+declare @TCI1  varchar(50)
+declare @wheelspro1 varchar(50)
+declare @TwiEast1 varchar(50)
+declare @ntw1 decimal(18,2) 
+declare @Tireuniverse1   decimal(18,2)
+declare @Turbo1  decimal(18,2)
+declare @MICKEYTHOMPSON1  decimal(18,2)
+declare @ATD1   decimal(18,2)
+declare @TOYO1  decimal(18,2)
+declare @Tireco1  decimal(18,2)
+declare @MAST1 decimal(18,2)
+declare @TWIFTP1 decimal(18,2)
+declare @Kumho1 decimal(18,2)
+declare @Ramona1 decimal(18,2)
+declare @TWW1 decimal (18,2)
+declare @mspn1 varchar(50)
+declare @mfg1 varchar(50)
+declare @log_asa1 decimal(18,2)
+declare @Nitto1 decimal(18,2)
+declare @cooperMapprice1 decimal(18,2)
+declare @hankookmapprice1 decimal(18,2)
+declare @PirelliMapPrice1 decimal(18,2)
+declare @YokohamaMapPrice1 decimal(18,2)
+declare @AdvanceTire1 decimal(18,2)
+declare @pirelli1 decimal(18,2)
+declare @Syron1 decimal(18,2)
+DECLARE @return_value int,
+@Lowest decimal(18, 2),
+@SLowest decimal(18, 2),
+@ThirdLowest decimal(18, 2),
+@FourLowest decimal(18,2),
+@FiveLowest decimal(18,2),
+@SixLowest decimal(18,2),
+@SevenLowest decimal(18,2),
+@EightLowest decimal(18,2),
+
+@LowestSource varchar(50),
+@sLowestSource varchar(50),
+@ThirdLowestSource varchar(50),
+@FourLowestSource varchar(50),
+@FiveLowestSource varchar(50),
+@SixLowestSource varchar(50),
+@SevenLowestSource varchar(50),
+@EightLowestSource varchar(50)
+
+
+declare @vct_compare_cursor  as cursor 
+set @vct_compare_cursor = cursor for  select log_asa,nitto,CooperMapprice,hankookMapprice,PirelliMapPrice,YokohamaMapPrice,mfg,mspn,goodyear,contidirect,TCI,wheelspro,TWIEast,NTW,Tireuniverse,Turbo,MICKEYTHOMPSON,ATD,TOYO,Tireco,MAST,TWIFTP,Kumho,Ramona,tww,AdvanceTire,Pirelli,Syron from [dbo].[VCT_DataPivot];
+open @vct_compare_cursor
+fetch next from @vct_compare_cursor into @log_asa1,@nitto1,@CoopermapPrice1,@hankookMapprice1,@YokohamaMapPrice1,@PirelliMapPrice1,@mfg1,@mspn1,@goodyear1,@contidirect1,@TCI1,@wheelspro1,@TWIEast1,@NTW1,@Tireuniverse1,@Turbo1,@MICKEYTHOMPSON1,@ATD1,@TOYO1,@Tireco1,@MAST1,@TWIFTP1,@Kumho1,@Ramona1,@TWW1, @AdvanceTire1,@Pirelli1, @Syron1
+while @@FETCH_STATUS = 0
+begin
+set @Lowest = 0
+set @sLowest = 0
+set @ThirdLowest = 0
+set @FourLowest = 0
+set @FiveLowest = 0
+set @SixLowest = 0
+set @SevenLowest = 0
+set @EightLowest = 0
+set @LowestSource = ''
+set @sLowestSource = ''
+set @ThirdLowestSource = ''
+set @FourLowestSource = ''
+set @FiveLowestSource = ''
+set @SixLowestSource = ''
+set @SevenLowestSource = ''
+set @EightLowestSource = ''
+
+EXEC @return_value = [dbo].[VCT_compare]
+@TCI = @TCI1,
+@wheelspro = @wheelspro1,
+@TwiEast = @TwiEast1,
+@ntw = @ntw1,
+@Tireuniverse = @Tireuniverse1,
+@Turbo = @Turbo1,
+@MICKEYTHOMPSON = @MICKEYTHOMPSON1,
+@ATD = @ATD1,
+@TOYO = @TOYO1,
+@Tireco = @Tireco1,
+@MAST = @MAST1,
+@TWIFTP = @TWIFTP1,
+@Kumho = @Kumho1,
+@Ramona = @Ramona1,
+@TWW = @TWW1,
+@Goodyear = @Goodyear1,
+@ContiDirect = @ContiDirect1,
+@mspn = @mspn1,
+@mfg = @mfg1,
+@log_asa=@log_asa1,
+@nitto=@nitto1,
+@cooperMapprice =@cooperMapprice1,
+@hankookmapprice= @hankookmapprice1,
+@PirelliMapPrice= @PirelliMapPrice1,
+@YokohamaMapPrice=@YokohamaMapPrice1,
+@AdvanceTire=@AdvanceTire1,
+@pirelli=@pirelli1,
+@Syron=@Syron1,
+@Lowest = @Lowest OUTPUT,
+@SLowest = @SLowest OUTPUT,
+@ThirdLowest = @ThirdLowest OUTPUT,
+@FourLowest = @FourLowest OUTPUT,
+@FiveLowest = @FiveLowest OUTPUT,
+@SixLowest = @SixLowest OUTPUT,
+@SevenLowest = @SevenLowest OUTPUT,
+@EightLowest = @EightLowest OUTPUT,
+@LowestSource = @LowestSource OUTPUT,
+@sLowestSource = @sLowestSource OUTPUT,
+@ThirdLowestSource = @ThirdLowestSource OUTPUT,
+@FourLowestSource = @FourLowestSource OUTPUT,
+@FiveLowestSource = @FiveLowestSource OUTPUT,
+@SixLowestSource = @SixLowestSource OUTPUT,
+@SevenLowestSource = @SevenLowestSource OUTPUT,
+@EightLowestSource = @EightLowestSource OUTPUT
+insert into vct_datacompare  (
+goodyear,
+contidirect,
+mfg,
+mspn,
+TCI,
+wheelspro,
+TWIEast,
+NTW,
+Tireuniverse,
+Turbo,
+MICKEYTHOMPSON,
+ATD,
+TOYO,
+Tireco,
+MAST,
+TWIFTP,
+Kumho,
+Ramona,
+TWW,
+log_asa,
+nitto,
+CooperMapPrice,
+hankookMapprice,
+PirelliMapPrice,
+YokohamaMapPrice,
+AdvanceTire,
+pirelli,
+Syron,
+Lowest,
+sLowest,
+ThirdLowest,
+FourLowest,
+FiveLowest,
+SixLowest,
+SevenLowest,
+EightLowest,
+Lowestsource,
+SLowestsource,
+ThirdLowestsource,
+FourLowestsource,
+FiveLowestsource,
+SixLowestsource,
+SevenLowestsource,
+EightLowestSource
+)
+values           
+(
+@goodyear1,
+@contidirect1,
+@mfg1,
+@mspn1,
+@TCI1,
+@wheelspro1, 
+@TwiEast1 ,
+@ntw1 , 
+@Tireuniverse1   ,
+@Turbo1,
+@MICKEYTHOMPSON1  ,
+@ATD1  ,
+@TOYO1 ,
+@Tireco1  ,
+@MAST1,
+@TWIFTP1 ,
+@Kumho1 ,
+@Ramona1 ,
+@TWW1,
+@log_asa1 ,
+@Nitto1,
+@cooperMapprice1,
+@hankookmapprice1,
+@PirelliMapPrice1,
+@YokohamaMapPrice1,
+
+@AdvanceTire1,
+@pirelli1,
+@Syron1,
+@Lowest ,
+@SLowest  ,
+@ThirdLowest  ,
+@FourLowest,
+@FiveLowest,
+@SixLowest,
+@SevenLowest,
+@EightLowest,
+@LowestSource  ,
+@sLowestSource, 
+@ThirdLowestSource,
+@FourLowestSource,
+@FiveLowestSource,
+@SixLowestSource,
+@SevenLowestSource,
+@EightLowestSource
+)
+fetch next from @vct_compare_cursor into @log_asa1,@nitto1,@coopermapprice1,@hankookMapprice1,@PirelliMapPrice1,@YokohamaMapPrice1,@mfg1,@mspn1,@goodyear1,@contidirect1,@TCI1,@wheelspro1,@TWIEast1,@NTW1,@Tireuniverse1,@Turbo1,@MICKEYTHOMPSON1,@ATD1,@TOYO1,@Tireco1,@MAST1,@TWIFTP1,@Kumho1,@Ramona1,@TWW1,@AdvanceTire1,@pirelli1,@Syron1
+end
+close @vct_compare_cursor
+deallocate @vct_compare_cursor
+
+update vct_datacompare set dollarprofit = slowest - lowest where slowest <> 0
+update vct_datacompare set dollarpercentage = dollarprofit /slowest  * 100 where slowest <> 0 and dollarprofit <> 0
+
+This is Store prodcure to Compute the Lowest and source
+
+
+
+ALTER PROCEDURE [dbo].[VCT_compare] 
+	@TCI  decimal(18,2),
+	@wheelspro decimal(18,2),
+	@TwiEast decimal(18,2),
+	@ntw decimal(18,2), 	
+	@Tireuniverse   decimal(18,2),
+	@Turbo  decimal(18,2),
+	@MICKEYTHOMPSON  decimal(18,2),
+	@ATD   decimal(18,2),
+	@TOYO  decimal(18,2),
+	@Tireco  decimal(18,2),
+	@MAST decimal(18,2),	
+	@TWIFTP decimal(18,2),
+	@Kumho decimal(18,2),
+	@Ramona decimal(18,2),
+	@TWW decimal(18,2),
+	@AdvanceTire decimal(18,2),
+	@pirelli decimal(18,2),
+	@Syron decimal(18,2),	
+	@Goodyear decimal(18,2),
+	@ContiDirect decimal(18,2),
+	@mspn varchar(50),
+	@mfg varchar(50),
+	@Log_asa decimal (18,2),
+	@Nitto decimal(18,2),
+	@hankookmapprice decimal(18,2),
+	@coopermapprice decimal(18,2),
+	@PirelliMapPrice decimal(18,2),
+	@YokohamaMapPrice decimal(18,2),
+	@Lowest decimal(18,2) output,
+	@SLowest decimal(18,2) output,
+	@ThirdLowest decimal(18,2) output,
+	@FourLowest decimal(18,2) output,
+	@FiveLowest decimal(18,2) output,
+	@SixLowest decimal(18,2) output,
+	@SevenLowest decimal(18,2) output,
+	@EightLowest decimal(18,2) output,
+	
+	@LowestSource varchar(50) output,
+	@sLowestSource varchar(50) output,
+	@ThirdLowestSource varchar(50) output,
+	@FourLowestSource varchar(50) output,
+	@FiveLowestSource varchar(50) output,
+	@sixLowestSource varchar(50) output,
+	@SevenLowestSource varchar(50) output,
+	@EightLowestSource varchar(50) output
+AS
+BEGIN
+	truncate table vct_pricetemp
+	insert into vct_pricetemp (price,source) values (@TCI,'TCI')
+	insert into vct_pricetemp (price,source) values (@wheelspro,'WheelsPro')
+	insert into vct_pricetemp (price,source) values (@TwiEast,'TwiEast')
+	insert into vct_pricetemp (price,source) values (@ntw,'ntw')
+	insert into vct_pricetemp (price,source) values (@Tireuniverse,'Tireuniverse')
+	insert into vct_pricetemp (price,source) values (@Turbo,'Turbo')
+	insert into vct_pricetemp (price,source) values (@MICKEYTHOMPSON ,'MICKEYTHOMPSON ')
+	insert into vct_pricetemp (price,source) values (@ATD,'ATD')
+	insert into vct_pricetemp (price,source) values (@TOYO,'TOYO')
+	insert into vct_pricetemp (price,source) values (@Tireco,'Tireco')
+	insert into vct_pricetemp (price,source) values (@MAST,'MAST')
+	insert into vct_pricetemp (price,source) values (@TWIFTP,'TWIFTP')
+	insert into vct_pricetemp (price,source) values (@Kumho,'Kumho')
+	insert into vct_pricetemp (price,source) values (@Ramona,'Ramona')
+	insert into vct_pricetemp (price,source) values (@Goodyear,'Goodyear')
+	insert into vct_pricetemp (price,source) values (@ContiDirect,'ContiDirect')
+	insert into vct_pricetemp (price,source) values (@Log_asa ,'Log_ASA')
+	insert into vct_pricetemp (price,source) values (@Nitto,'NittoMapPrice')
+	insert into vct_pricetemp (price,source) values (@coopermapprice,'coopermapprice')
+	insert into vct_pricetemp (price,source) values (@hankookmapprice,'hankookmapprice')
+	insert into vct_pricetemp (price,source) values (@PirelliMapPrice,'PirelliMapPrice')
+	insert into vct_pricetemp (price,source) values (@YokohamaMapPrice,'YokohamaMapPrice')
+	
+	insert into vct_pricetemp (price,source) values (@TWW,'TWW')
+	insert into vct_pricetemp (price,source) values (@AdvanceTire,'AdvanceTire')
+	insert into VCT_PriceTemp (price,source) values (@pirelli,'Pirelli')
+	insert into VCT_PriceTemp (price,source) values (@Syron,'Syron')
+	declare @vct_Price_cursor  as cursor 
+	declare @Lowest_ as decimal(18,2)
+	declare @LowestSource_ as varchar(50) 
+	declare @i as int
+	set @vct_Price_cursor = cursor for  select top (8) price,source from vct_pricetemp where price > 0 order by price;
+	open @vct_price_cursor
+	fetch next from @vct_price_cursor into @lowest_,@lowestsource_
+	set @i = 1
+	set @Lowest = 0
+	set @sLowest = 0
+	set @ThirdLowest = 0
+	set @FourLowest=  0
+	set @FiveLowest= 0
+	set @SixLowest = 0
+	set @SevenLowest = 0
+	set @EightLowest = 0
+	set @LowestSource = ''
+	set @sLowestSource = ''
+	set @ThirdLowestSource = ''
+	set @FourLowestSource = ''
+	set @FiveLowestSource =''
+	set @SixLowestSource = ''
+	set @SevenLowestSource =''
+	set @EightLowestSource = '' 
+ 
+
+
+	while @@FETCH_STATUS = 0
+	begin
+		if @i = 1 
+		begin
+			set @Lowest = @lowest_
+			set @LowestSource = @LowestSource_ 
+			
+		end
+				 	
+		
+		if @i = 2
+		begin
+			set @SLowest  = @lowest_
+			set @sLowestSource = @LowestSource_
+			
+		end
+		
+		if @i = 3
+		begin
+			set @ThirdLowest  = @lowest_
+			set @ThirdLowestSource = @LowestSource_
+			
+		end
+		
+		
+		if @i = 4
+		begin
+			set @FourLowest  = @lowest_
+			set @FourLowestSource = @LowestSource_
+			
+		end
+		
+
+		
+		if @i = 5
+		begin
+			set @FiveLowest  = @lowest_
+			set @FiveLowestSource = @LowestSource_
+			
+		end
+
+
+		
+		if @i = 6
+		begin
+			set @SixLowest  = @lowest_
+			set @SixLowestSource = @LowestSource_
+			
+		end
+		
+
+		
+		if @i = 7
+		begin
+			set @SevenLowest  = @lowest_
+			set @SevenLowestSource = @LowestSource_
+			
+		end
+			
+		
+		
+		else 
+		begin
+			set @EightLowest  = @lowest_
+			set @EightLowestSource = @LowestSource_
+			
+		end
+		
+		
+			
+		
+		set @i = @i+ 1
+		fetch next from @vct_price_cursor into @lowest_,@lowestsource_
+	end
+	close @vct_price_cursor
+	deallocate @vct_price_cursor
+END
